@@ -1,7 +1,5 @@
 # Digital Image Processing — Homework Assignments
 
----
-
 ## Overview
 
 This repository contains three Jupyter Notebook homework assignments completed for the Digital Image Processing course. Each assignment focuses on a different fundamental area of the field, progressing from color space manipulation and tone mapping, through frequency-domain filtering, to morphological segmentation and edge detection.
