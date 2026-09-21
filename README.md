@@ -1,4 +1,4 @@
-# Digital Image Processing — Homework Assignments
+# Digital Image Processing - Homework Assignments
 
 ## Overview
 
@@ -25,20 +25,20 @@ digital-image-processing/
 
 ---
 
-## Homework 1 — Color Space Manipulation, HDR Tone Mapping, Sharpening & CLAHE
+## Homework 1 - Color Space Manipulation, HDR Tone Mapping, Sharpening & CLAHE
 
 **File:** `homework1/domaci1_22_351.ipynb`
 
-### Part 1 — Bus Recoloring (Blue → Red / Green)
+### Part 1 - Bus Recoloring (Blue → Red / Green)
 
 The task was to recolor blue city buses in photographs to red and green using color space analysis.
 
 **Approach:**  
 RGB was immediately ruled out because the spectra of blue, red, and green overlap significantly, making clean segmentation impossible. Instead, a **hybrid HSV + YUV masking** strategy was developed:
 
-- **HSV mask** — isolates the blue hue range (`0.55 < H < 0.75`) while constraining saturation and brightness to avoid dark shadows and overexposed regions.
-- **YUV mask** — the U channel proved critical for eliminating unwanted reflections on bus windows and wet asphalt, which HSV alone could not suppress.
-- The **final mask** is the logical AND of both masks, and only the Hue channel is modified at masked pixels — saturation and brightness are preserved, producing natural-looking results.
+- **HSV mask** - isolates the blue hue range (`0.55 < H < 0.75`) while constraining saturation and brightness to avoid dark shadows and overexposed regions.
+- **YUV mask** - the U channel proved critical for eliminating unwanted reflections on bus windows and wet asphalt, which HSV alone could not suppress.
+- The **final mask** is the logical AND of both masks, and only the Hue channel is modified at masked pixels - saturation and brightness are preserved, producing natural-looking results.
 
 Parameters were tuned experimentally per image. A **bonus implementation** for `gsp3.jpg` decomposes the bus into three separate sub-masks (`mask_body`, `mask_roof`, `mask_shadows`) combined with a stricter U-channel threshold, achieving near-artifact-free recoloring.
 
@@ -46,7 +46,7 @@ Parameters were tuned experimentally per image. A **bonus implementation** for `
 
 ---
 
-### Part 2 — HDR Tone Mapping
+### Part 2 - HDR Tone Mapping
 
 The task was to map an HDR image (`sea.hdr`) into the displayable [0, 1] range using multiple methods, with gamma correction (γ = 1/2.2) applied throughout.
 
@@ -54,9 +54,9 @@ The task was to map an HDR image (`sea.hdr`) into the displayable [0, 1] range u
 
 | Method | Description |
 |--------|-------------|
-| **Linear with saturation** | Clips at the `(100 − s)th` percentile; interactive slider for saturation percentage. Parameters A = 1, B ≈ 12.31, C ≈ 36.35 were identified. |
+| **Linear with saturation** | Clips at the `(100 - s)th` percentile; interactive slider for saturation percentage. Parameters A = 1, B ≈ 12.31, C ≈ 36.35 were identified. |
 | **Logarithmic** | `c · log(1 + img)` — compresses highlights smoothly. |
-| **Exponential** | `1 − exp(−c · img)` — soft shoulder at high intensities. |
+| **Exponential** | `1 - exp(-c · img)` — soft shoulder at high intensities. |
 | **Drago** | Adaptive logarithmic operator for perceptually uniform brightness. |
 | **Reinhard** | Global photographic tone mapping: `img / (1 + img)`. |
 
@@ -66,7 +66,7 @@ Each method's parameters were explored interactively using `ipywidgets.interact`
 
 ---
 
-### Part 3 — Image Sharpening (Unsharp Masking)
+### Part 3 - Image Sharpening (Unsharp Masking)
 
 The task was to sharpen `miner.jpg` in a natural-looking way, without over-emphasizing edges to the point of looking artificial.
 
@@ -84,14 +84,14 @@ Parameters were tuned interactively using `ipywidgets.interact`.
 
 ---
 
-### Part 4 — Custom CLAHE Implementation (`dosCLAHE`)
+### Part 4 - Custom CLAHE Implementation (`dosCLAHE`)
 
 The task was to implement Contrast Limited Adaptive Histogram Equalization (CLAHE) from scratch, including image padding and bilinear interpolation.
 
 **Implementation details:**
 
-- **`image_padding`** — pads the image by repeating the last rows and columns so that it becomes evenly divisible by the tile grid (`numTiles`). This avoids the black-border artifact that zero-padding would introduce, and prevents unwanted effects in the histograms of border tiles.
-- **`dosCLAHE(imgIn, numTiles, limit)`** — the main function:
+- **`image_padding`** - pads the image by repeating the last rows and columns so that it becomes evenly divisible by the tile grid (`numTiles`). This avoids the black-border artifact that zero-padding would introduce, and prevents unwanted effects in the histograms of border tiles.
+- **`dosCLAHE(imgIn, numTiles, limit)`** - the main function:
   - For **color images**, only the **V channel** of the HSV representation is processed; H and S are left unchanged. This enhances contrast without distorting colors.
   - The padded image is divided into a `numTiles[0] × numTiles[1]` grid. A local CDF (with clip limit) is computed for each tile.
   - **Bilinear interpolation** between the four surrounding tile CDFs is fully **vectorized** using coordinate matrices, avoiding nested loops and significantly speeding up execution.
@@ -101,11 +101,11 @@ The task was to implement Contrast Limited Adaptive Histogram Equalization (CLAH
 
 ---
 
-## Homework 2 — Frequency-Domain Filtering, Image Restoration, Noise Estimation & Self-Guided Filter — Gaussian Filtering in the Frequency Domain
+## Homework 2 - Frequency-Domain Filtering, Image Restoration, Noise Estimation & Self-Guided Filter - Gaussian Filtering in the Frequency Domain
 
 **File:** `homework2/domaci2_22_351.ipynb`
 
-### Part 1 — Analytical Derivation
+### Part 1 - Analytical Derivation
 
 The 2-D discrete Fourier transform of a separable Gaussian was derived analytically. Starting from the continuous Gaussian and applying the Fourier transform, the key result is:
 
@@ -115,7 +115,7 @@ This gives the relationship between spatial and frequency-domain standard deviat
 
 $$\sigma_r^{F} = \frac{N_H}{2\pi\sigma_r^{S}}, \qquad \sigma_c^{F} = \frac{N_W}{2\pi\sigma_c^{S}}$$
 
-### Part 2 — Image Restoration (Wiener Filter)
+### Part 2 - Image Restoration (Wiener Filter)
 
 The task was to restore a motion-blurred image (`etf_blur.png`) using its known blur kernel (`blur_kernel.txt`).
 
@@ -132,7 +132,7 @@ Restoration was performed in the **frequency domain** using a **Wiener filter**:
 
 ---
 
-### Part 3 — Noise Variance Estimation (`estimate_noise_var`)
+### Part 3 - Noise Variance Estimation (`estimate_noise_var`)
 
 The task was to estimate the variance of additive Gaussian noise in an image without knowing the noise level in advance.
 
@@ -148,7 +148,7 @@ The function `estimate_noise_var` computes **local variance** in small windows a
 
 ---
 
-### Part 4 — Self-Guided Filter & Fast Self-Guided Filter
+### Part 4 - Self-Guided Filter & Fast Self-Guided Filter
 
 The task was to implement both the standard and fast variants of the Self-Guided Filter, following the reference papers provided with the assignment, and compare their quality and speed.
 
@@ -167,32 +167,32 @@ The fast variant reduces computation by **decimating** the image by factor `s`, 
 
 ---
 
-## Homework 3 — Coin Segmentation & Canny Edge Detection
+## Homework 3 - Coin Segmentation & Canny Edge Detection
 
 **File:** `homework3/domaci3_22_351.ipynb`
 
-### Part 1 — Robust Coin Segmentation & Counting
+### Part 1 - Robust Coin Segmentation & Counting
 
 The task was to segment Serbian coins (1-dinar and 5-dinar) from a green background, count them, and classify them by size.
 
-#### `coin_mask` — Segmentation
+#### `coin_mask` - Segmentation
 
 A **hybrid color + texture** approach was designed to handle non-uniform illumination and reflections:
 
 1. **Median pre-filtering** (3×3) reduces impulse noise while preserving edges.
-2. **HSV color analysis** — the dominant background hue is found automatically from the histogram. A hue range covering ≥20% of the dominant bin's count is labeled background. An **Otsu threshold on background saturation** (×0.5) further refines the color mask. Everything outside the background color range is a coin candidate.
-3. **Texture analysis** — local standard deviation is computed in a window sized to 0.5% of the image's smaller dimension. Pixels above 30% of Otsu's texture threshold are flagged as textured. The texture mask is **morphologically dilated** (radius ≈ 2.5% of image size) to fill coin interiors from their textured edges inward.
-4. **Combined mask** = `color_mask AND dilated_texture_mask` — both conditions must hold simultaneously, eliminating background scratches (wrong texture) and smooth regions with unusual color (wrong color).
-5. **Morphological cleanup** — opening → hole-filling → closing → hole-filling, with kernel sizes scaled to image resolution.
-6. **Border removal** — any region touching the image boundary is discarded (incomplete coins).
+2. **HSV color analysis** - the dominant background hue is found automatically from the histogram. A hue range covering ≥20% of the dominant bin's count is labeled background. An **Otsu threshold on background saturation** (×0.5) further refines the color mask. Everything outside the background color range is a coin candidate.
+3. **Texture analysis** - local standard deviation is computed in a window sized to 0.5% of the image's smaller dimension. Pixels above 30% of Otsu's texture threshold are flagged as textured. The texture mask is **morphologically dilated** (radius ≈ 2.5% of image size) to fill coin interiors from their textured edges inward.
+4. **Combined mask** = `color_mask AND dilated_texture_mask` - both conditions must hold simultaneously, eliminating background scratches (wrong texture) and smooth regions with unusual color (wrong color).
+5. **Morphological cleanup** - opening → hole-filling → closing → hole-filling, with kernel sizes scaled to image resolution.
+6. **Border removal** - any region touching the image boundary is discarded (incomplete coins).
 
 All parameters scale relative to image dimensions, making the algorithm **resolution-independent**.
 
-#### `bw_label` — Connected Component Labeling
+#### `bw_label` - Connected Component Labeling
 
 A custom BFS-based connected component labeler using **8-connectivity** was implemented from scratch (without `scipy.ndimage.label`). 8-connectivity was chosen because 4-connectivity can incorrectly split circular objects along diagonal boundaries.
 
-#### `coin_classification` — Size Classification
+#### `coin_classification` - Size Classification
 
 Coins are classified by region area (larger area → 5-dinar):
 
@@ -204,15 +204,15 @@ Circularity is computed as $\frac{4\pi A}{P^2}$ (= 1 for a perfect circle).
 
 ---
 
-### Part 2 — Canny Edge Detection
+### Part 2 - Canny Edge Detection
 
 A full Canny edge detector was implemented from scratch:
 
-1. **Gaussian smoothing** — configurable σ.
-2. **Gradient computation** — Sobel operators for ∂x and ∂y; magnitude and angle calculated.
-3. **Non-maximum suppression (NMS)** — gradient direction quantized to 4 directions (0°, 45°, 90°, 135°); local maxima retained, others suppressed.
-4. **Double thresholding** — pixels above `high` are strong edges; pixels between `low` and `high` are weak edges.
-5. **Hysteresis edge tracking** — BFS from strong edge seeds, accepting connected weak edges.
+1. **Gaussian smoothing** - configurable σ.
+2. **Gradient computation** - Sobel operators for ∂x and ∂y; magnitude and angle calculated.
+3. **Non-maximum suppression (NMS)** - gradient direction quantized to 4 directions (0°, 45°, 90°, 135°); local maxima retained, others suppressed.
+4. **Double thresholding** - pixels above `high` are strong edges; pixels between `low` and `high` are weak edges.
+5. **Hysteresis edge tracking** - BFS from strong edge seeds, accepting connected weak edges.
 
 Results were validated against `skimage.feature.canny`. Differences are attributed to skimage's sub-pixel gradient interpolation during NMS and internal magnitude normalization. The custom implementation faithfully follows the theoretical algorithm from lectures.
 
